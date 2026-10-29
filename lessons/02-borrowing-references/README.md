@@ -21,7 +21,7 @@ In Lesson 01, we saw that assigning or passing a `String` or `Vec` *moves* it. T
 **Borrowing** is Rust's solution: you can *lend* a value without transferring ownership.
 
 ```rust
-fn print_vec(v: &Vec<i32>) {      // borrows v, does not take ownership
+fn print_vec(v: &[i32]) {          // borrows v, does not take ownership
     println!("{v:?}");
 }
 
@@ -78,7 +78,7 @@ At any point in time, for a given value, you may have **either**:
 
 **Never both at the same time.**
 
-This rule makes data races *structurally impossible* in single-threaded code, and is the foundation for Rust's thread-safety guarantees.
+This rule eliminates aliasing bugs — iterator invalidation, mutation during a read — and is the foundation for Rust's thread-safety guarantees.
 
 ### How C# compares
 
@@ -154,4 +154,6 @@ This is idiomatic Rust. Prefer `&[T]` over `&Vec<T>` in function signatures.
 
 ## Next Lesson
 
-[Lesson 03, Structs & Enums](../03-structs-enums/README.md): Building custom types. `struct` replaces `class` (without inheritance), and `enum` becomes powerful enough to replace entire class hierarchies.
+**Next up:** Lesson 03, Structs & Enums *(planned)*, building custom types. `struct` replaces `class` (without inheritance), and `enum` becomes powerful enough to replace entire class hierarchies.
+
+Until then, see the [course README](../../README.md) for the full roadmap.

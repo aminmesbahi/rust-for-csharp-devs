@@ -55,9 +55,9 @@ fn demonstrate_copy_semantics() {
     println!("a = {a}"); // 10
     println!("b = {b}"); // 10
 
-    // Modifying b does not affect a (they are independent stack slots).
-    let mut c = a;
-    c = 99;
+    // Modifying c does not affect a (they are independent stack slots).
+    let mut c = a; // c is an independent copy of a
+    c += 89;       // c = 99, a is untouched
     println!("a = {a}, c = {c}"); // a = 10, c = 99
 }
 

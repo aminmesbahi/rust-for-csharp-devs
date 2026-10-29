@@ -52,3 +52,13 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+## Rust
+## Cargo build output (can be hundreds of MB per lesson)
+target/
+**/*.rs.bk
+*.pdb
+
+## Cargo.lock is deliberately NOT ignored.
+## Every lesson is a binary crate, so committing the lockfile keeps the
+## examples reproducible as dependency versions change.

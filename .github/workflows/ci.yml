@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Lessons are discovered from the filesystem, so adding a lesson folder
+  # automatically adds it to the build matrix.
+  discover:
+    name: Discover lessons
+    runs-on: ubuntu-latest
+    outputs:
+      lessons: ${{ steps.list.outputs.lessons }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        name: List lesson directories
+        run: |
+          dirs=$(find lessons -mindepth 1 -maxdepth 1 -type d -printf '"%f",' | sed 's/,$//')
+          echo "lessons=[$dirs]" >> "$GITHUB_OUTPUT"
+
+  rust:
+    name: Rust / ${{ matrix.lesson }}
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lesson: ${{ fromJson(needs.discover.outputs.lessons) }}
+    defaults:
+      run:
+        working-directory: lessons/${{ matrix.lesson }}/rust
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Cache build artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: lessons/${{ matrix.lesson }}/rust
+      - name: Check formatting
+        run: cargo fmt --check
+      - name: Lint
+        run: cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cargo test
+
+  csharp:
+    name: C# / ${{ matrix.lesson }}
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        lesson: ${{ fromJson(needs.discover.outputs.lessons) }}
+    defaults:
+      run:
+        working-directory: lessons/${{ matrix.lesson }}/csharp
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build
+        run: dotnet build --configuration Release
+      - name: Run
+        run: dotnet run --configuration Release --no-build

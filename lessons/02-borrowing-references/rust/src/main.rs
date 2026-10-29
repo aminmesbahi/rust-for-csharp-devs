@@ -22,8 +22,9 @@
 //   No magic -1. The type system enforces that callers handle both cases.
 fn linear_search(numbers: &[i32], target: i32) -> Option<usize> {
     for (index, &value) in numbers.iter().enumerate() {
-        // `&value` in the pattern destructures the &&i32 from iter()
-        // into a plain i32. Equivalent to: let value = *item;
+        // `.iter()` on a `&[i32]` yields `&i32`, so the `&value` pattern
+        // destructures that reference into a plain `i32`.
+        // Equivalent to: let value = *item;
         if value == target {
             return Some(index);
         }
@@ -39,6 +40,10 @@ fn linear_search(numbers: &[i32], target: i32) -> Option<usize> {
 //
 // The caller must have declared the Vec as `mut` and passes `&mut data`.
 // While this borrow is active, no other reference to the data can exist.
+//
+// `iter_mut()` is spelled out rather than using `for value in numbers`
+// because it makes the borrow explicit, which is the point of the lesson.
+#[allow(clippy::explicit_iter_loop)]
 fn double_in_place(numbers: &mut [i32]) {
     for value in numbers.iter_mut() {
         *value *= 2;   // dereference to write through the mutable reference
